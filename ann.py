@@ -69,8 +69,33 @@ y_pred = (y_pred > 0.5)
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(y_test, y_pred)
 
+# Accuracy
+accuracy = (cm[0][0] + cm[1][1]) / 2000
+print(accuracy)
+
 # Predicting churn for customer
 X_customer = sc.transform(np.array([[0.0, 0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000]]))
 y_customer_pred = classifier.predict(X_customer) > 0.5
 print(y_customer_pred)
 # > False he won't churn
+
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import cross_val_score
+
+def build_classifier():
+  classifier = Sequential()
+  classifier.add(Dense(units=6, activation='relu',
+                       kernel_initializer='uniform', input_dim=11))
+  classifier.add(Dense(units=6, activation='relu',
+                       kernel_initializer='uniform'))
+  classifier.add(Dense(units=1, activation='sigmoid',
+                       kernel_initializer='uniform'))
+  classifier.compile(optimizer='adam', loss='binary_crossentropy',
+                     metrics=['accuracy'])
+  return classifier
+
+# Cross validation
+classifier = KerasClassifier(build_fn=build_classifier, batch_size=10, epochs=100)
+precisions = cross_val_score(estimator=classifier, X=X_train, y=y_train, cv=10, n_jobs=-1)
+average_accuracy = precisions.mean()
+print(average_accuracy)
