@@ -68,3 +68,9 @@ y_pred = (y_pred > 0.5)
 # Making the Confusion Matrix
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(y_test, y_pred)
+
+# Predicting churn for customer
+X_customer = sc.transform(np.array([[0.0, 0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000]]))
+y_customer_pred = classifier.predict(X_customer) > 0.5
+print(y_customer_pred)
+# > False he won't churn
